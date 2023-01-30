@@ -20,6 +20,7 @@ class External(Process):
                         print("event is hurricane")
                     
                 elif event == "fuel shortage":
-                    if random.random() > 0.95:
+                    if random.random() > 1:
                         os.kill(os.getppid(), signal.SIGUSR2)
                         print("event is fuel shortage")
+            time.sleep(5)
