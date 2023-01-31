@@ -40,7 +40,7 @@ class Home(Process):
             if self.offre > 0:
                 o = str(abs(self.offre)).encode()
                 self.mq_offre.send(o, type=self.id)
-                print(f'Offre : {self.offre}, {self.id}')
+                print(f'Offre : {self.offre}, {self.id}, {self.temperature[i]}')
             else:
                 d = str(-self.offre).encode()
                 self.mq_demande.send(d, type=self.id)
@@ -91,7 +91,6 @@ class Home(Process):
                     print("Offre:", data)
                 
             elif self.offre < 0:
-                m, t = self.mq_demande.receive(type=self.id)
                 data =f'{-self.offre} '
                 self.s.sendall(data.encode())
                 print("Vend:", data)
@@ -100,6 +99,9 @@ class Home(Process):
                 data =f'{-self.offre} '
                 self.s.sendall(data.encode())
                 print("Rien:", data)
+
+            while self.mq_demande.current_messages:
+                m, t = self.mq_demande.receive()
 
             self.s.close()
             self.day.wait()

@@ -19,8 +19,6 @@ if __name__ == "__main__":
     mq_give = sysv_ipc.MessageQueue(key_give, sysv_ipc.IPC_CREAT)
     price = 10
     coeff = [1.1, 0.9]
-    nb_days = 10
-    barrier_day = Barrier(1)
 
     shared_memory = Array('i', nb_days)
     
@@ -30,7 +28,7 @@ if __name__ == "__main__":
     HOST = 'localhost'
     PORT = 17890
 
-    market = Market(price, coeff, nb_days, barrier_day, HOST, PORT)
+    market = Market(price, coeff, nb_days, num_homes, barrier_day, HOST, PORT)
 
     market.start()
     print("Market started")
@@ -43,11 +41,12 @@ if __name__ == "__main__":
     for home in home_processes:
         home.start()
 
+    market.join()
+
     for home in home_processes:
         home.join()
 
-    market.serve = False
-    market.join()
+    
 
     mq_ask.remove()
     mq_give.remove()
