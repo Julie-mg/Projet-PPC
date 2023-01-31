@@ -1,6 +1,5 @@
 import random
 from multiprocessing import Process, Array
-import time
 
 class WeatherSimulator(Process):
     def __init__(self, shared_memory, nb_days, day):
