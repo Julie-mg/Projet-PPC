@@ -64,7 +64,7 @@ class Market(Process):
             data = ''
             while data == '':
                 data = s.recv(1024)
-                m = data.decode()[0]
+                m = data.decode()
                 print(f"Market demand: received {m}")
             print("Disconnecting from client: ", a)
             print("nb_conn : ", self.nb_conn)

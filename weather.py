@@ -5,7 +5,7 @@ class WeatherSimulator(Process):
     def __init__(self, shared_memory, nb_days, day):
         super().__init__()
         self.shared_memory = shared_memory
-        self.temperature = 10 # starting temperature
+        self.temperature = random.randrange(0,30) # starting temperature
         self.temp_variation = 6 # temperature variation per update
         self.nb_days = nb_days
         self.day = day

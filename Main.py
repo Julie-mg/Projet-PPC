@@ -10,7 +10,6 @@ if __name__ == "__main__":
     nb_days = 10
     barrier_init = Barrier(num_homes)
     barrier_boucle = Barrier(num_homes)
-    barrier_act = Barrier(num_homes)
     barrier_day = Barrier(num_homes+2)
     lock = Lock()
     key_ask = 771
@@ -36,7 +35,7 @@ if __name__ == "__main__":
     # Wait for the Market to start listening for connections
     time.sleep(1)
 
-    home_processes = [Home(i+1, mq_give, mq_ask, barrier_init, barrier_boucle, barrier_act, lock, shared_memory, nb_days, barrier_day, HOST, PORT) for i in range(num_homes)]
+    home_processes = [Home(i+1, mq_give, mq_ask, barrier_init, barrier_boucle, lock, shared_memory, nb_days, barrier_day, HOST, PORT) for i in range(num_homes)]
 
     for home in home_processes:
         home.start()
