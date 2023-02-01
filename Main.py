@@ -8,21 +8,23 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 if __name__ == "__main__":
-    num_homes = 4
-    nb_days = 8
+    num_homes = 5
+    nb_days = 35
+    price = 0.17
+    coeff = [0.1, 0.1]
+
     barrier_init = Barrier(num_homes)
     barrier_boucle = Barrier(num_homes)
     barrier_day = Barrier(num_homes+2)
     lock = Lock()
+
     key_ask = 771
     key_give = 770
     mq_ask = sysv_ipc.MessageQueue(key_ask, sysv_ipc.IPC_CREAT)
     mq_give = sysv_ipc.MessageQueue(key_give, sysv_ipc.IPC_CREAT)
-    price = 0.17
-    coeff = [0.1, 0.1]
 
     HOST = 'localhost'
-    PORT = 17890
+    PORT = 17892
 
     shared_memory = Array('i', nb_days)
     shared_memory_price = Array('f', nb_days)

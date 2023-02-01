@@ -8,7 +8,7 @@ class External(Process):
         super().__init__()
         self.event_types = events
         self.nb_days = nb_days
-        self.proba = [0.95, 0.6, 0.5, 0.25]
+        self.proba = [0.95, 0.75, 0.6, 0.5]
     
     def run(self):
         for event in self.event_types:

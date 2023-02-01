@@ -6,11 +6,11 @@ import socket
 class Home(Process):
     def __init__(self, id, mq_offer, mq_demande, barrier_init, barrier_while, lock, shared_temperature, nb_days, barrier_day, HOST, PORT):
         super().__init__()
-        self.conso = random.randrange(6,60)
         self.id = id
         self.trade_policy = random.randint(1,3)
-        self.prod = random.randrange(40,80)
         self.mq_offer = mq_offer
+        self.prod = random.randrange(40,80)
+        self.conso = random.randrange(6,60)
         self.mq_demande = mq_demande
         self.offer = self.prod - self.conso
         self.barrier_init = barrier_init
@@ -27,7 +27,8 @@ class Home(Process):
         for i in range (self.nb_days):
             # behavior of the process
             #print(f'{self.name} has offer of {self.offer}. Its trade policy is {self.trade_policy}')
-
+            self.prod = random.randrange(40,80)
+            self.conso = random.randrange(6,60)
             if (self.temperature[i] < 10 or self.temperature[i] > 38):
                 self.conso += random.randrange(0,25)
             elif self.conso > 50:

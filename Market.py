@@ -12,7 +12,7 @@ class Market(Process):
         self.nb_days = nb_days
         self.price = price
         self.coeff = coeff
-        self.long_term_coeff = 0.99
+        self.long_term_coeff = 0.92
         self.price = 0.145
         self.HOST = HOST
         self.PORT = PORT
@@ -70,6 +70,7 @@ class Market(Process):
                     server_socket.close()
                 server_socket.close()
                 #print("test4")
+            server_socket.close()
             #print("start calculate price")
 
             self.external = External(self.nb_days, self.signals)
@@ -78,12 +79,12 @@ class Market(Process):
 
             print("fin external")
 
-            self.price = self.price*self.long_term_coeff + self.event[0]*self.coeff[0] + self.event[1]*self.coeff[1]
+            self.price = self.price*self.long_term_coeff
             
             if self.sell != 0:
-                self.price = 1.1*abs(self.sell)
+                self.price += 0.1*abs(self.sell/100)
             elif self.buy != 0:
-                self.price = 0.9*abs(self.buy)
+                self.price -= 0.1*abs(self.buy/100)
 
             # Impact of the events
             eventToday = False
@@ -106,7 +107,8 @@ class Market(Process):
             self.shared_memory_price[i] = self.price
             #print(f'---------day {i} off')
             self.event = [0,0,0,0]
-
+            
+            time.sleep(1)
             self.barrier_day.wait()
 
         #print(f'end of day {i} market')
