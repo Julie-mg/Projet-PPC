@@ -1,24 +1,19 @@
 import signal
 import os
-import time
 import random
 from multiprocessing import Process
 
 class External(Process):
-    def __init__(self, nb_days):
+    def __init__(self, nb_days, events):
         super().__init__()
-        self.event_types = {"hurricane", "fuel shortage"}
+        self.event_types = events
         self.nb_days = nb_days
+        self.proba = [0.95, 0.6, 0.5, 0.25]
     
     def run(self):
-            for event in self.event_types:
-                if event == "hurricane":
-                    if random.random() > 0.9:
-                        os.kill(os.getppid(), signal.SIGUSR1)
-                        #print("event is hurricane")
-                    
-                elif event == "fuel shortage":
-                    if random.random() > 0.5:
-                        os.kill(os.getppid(), signal.SIGUSR2)
-                        #print("event is fuel shortage")
-            os.kill(os.getpid(), signal.SIGKILL)
+        for event in self.event_types:
+            for i in range(len(self.event_types)):
+                if event == self.event_types[i]:
+                    if random.random() > self.proba[i]:
+                        os.kill(os.getppid(), self.event_types[i])
+        os.kill(os.getpid(), signal.SIGKILL)

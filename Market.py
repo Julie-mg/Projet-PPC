@@ -1,5 +1,5 @@
 import socket
-from multiprocessing import Process
+from multiprocessing import Process, Barrier
 import select
 import concurrent.futures
 import time
@@ -7,7 +7,7 @@ import signal
 from External import External
 
 class Market(Process):
-    def __init__(self, price, coeff, nb_days, nb_homes, barrier_day, HOST, PORT):
+    def __init__(self, price, coeff, nb_days, nb_homes, barrier_day, HOST, PORT, shared_memory_price):
         super().__init__()
         self.nb_days = nb_days
         self.price = price
@@ -19,22 +19,32 @@ class Market(Process):
         self.nb_conn = 0
         self.nb_homes = nb_homes
         self.barrier_day = barrier_day
-        self.event = [0,0]
+        self.shared_memory_price = shared_memory_price
+        self.event = [0,0,0,0]
+        self.signals = [1,2,3,4]
+        self.barrier_signal = Barrier(2)
 
+    #  External event
     def handler(self, sig, frame):
-        if sig == signal.SIGUSR1:
-                print(f"Event today: hurricane")
-                self.price += 0.1
-        else:
-            print("no hurricane today")
-
-        if sig == signal.SIGUSR2: 
-                print(f"Event today: fuel shortage")
-                self.price += 0.1
-                #print(f"price: {self.price}")
-        else:print("no fuel shortage today")
+        print("Event of the day", end=" : ")
+        if sig == self.signals[0]:
+            self.event[0] = 25
+            print("War (Price increase by 25%)")
+        if sig == self.signals[1]:
+            self.event[1] = 10
+            print("Snowstorm (Price increase by 10%)")
+        if sig == self.signals[2]:
+            self.event[2] = -10
+            print("Law (Price decrease by 10%)")
+        if sig == self.signals[3]:
+            self.event[3] = 15
+            print("Fuel shortage (Price increase by 15%)")
         
     def run(self):
+        # Initialize the signal handler for each event
+        for sig in range(len(self.signals)):
+            signal.signal(self.signals[sig], self.handler)
+
         for i in range (self.nb_days):
             self.nb_conn = 0
             self.sell = 0
@@ -62,13 +72,30 @@ class Market(Process):
                 #print("test4")
             #print("start calculate price")
 
-            self.external = External(self.nb_days)
+            self.external = External(self.nb_days, self.signals)
             self.external.start()
-            signal.signal(signal.SIGUSR1, self.handler)
-            signal.signal(signal.SIGUSR2, self.handler)
+            self.external.join()
 
-            self.price = self.price*self.long_term_coeff 
-            self.event = [0,0]
+            print("fin external")
+
+            self.price = self.price*self.long_term_coeff + self.event[0]*self.coeff[0] + self.event[1]*self.coeff[1]
+            
+            if self.sell != 0:
+                self.price = 1.1*abs(self.sell)
+            elif self.buy != 0:
+                self.price = 0.9*abs(self.buy)
+
+            # Impact of the events
+            eventToday = False
+            for events in range(len(self.event)):
+                if self.event[events] != 0:
+                    self.price = round(self.price * (1 + self.event[events]/100),5)
+                    self.event[events] = 0
+                    eventToday = True
+            if not eventToday:
+                print("No event this day")
+
+
             if self.price > 1:
                 self.price = 1
             elif self.price < 0.1:
@@ -76,10 +103,12 @@ class Market(Process):
 
             print(f'Homes ask for {self.sell} and sell {self.buy}')
             print(f'Price for today: {self.price}')
+            self.shared_memory_price[i] = self.price
             #print(f'---------day {i} off')
-
+            self.event = [0,0,0,0]
 
             self.barrier_day.wait()
+
         #print(f'end of day {i} market')
 
     def socket_handler(self, s, a):

@@ -4,9 +4,11 @@ from Home import Home
 from Market import Market
 from Weather import WeatherSimulator
 import time
+import matplotlib.pyplot as plt
+import numpy as np
 
 if __name__ == "__main__":
-    num_homes = 10
+    num_homes = 4
     nb_days = 8
     barrier_init = Barrier(num_homes)
     barrier_boucle = Barrier(num_homes)
@@ -20,15 +22,16 @@ if __name__ == "__main__":
     coeff = [0.1, 0.1]
 
     HOST = 'localhost'
-    PORT = 17891
+    PORT = 17890
 
     shared_memory = Array('i', nb_days)
+    shared_memory_price = Array('f', nb_days)
     
     weather = WeatherSimulator(shared_memory, nb_days, barrier_day)
     weather.start()
 
 
-    market = Market(price, coeff, nb_days, num_homes, barrier_day, HOST, PORT)
+    market = Market(price, coeff, nb_days, num_homes, barrier_day, HOST, PORT, shared_memory_price)
 
     market.start()
     print("Market started")
@@ -48,6 +51,13 @@ if __name__ == "__main__":
 
     mq_ask.remove()
     mq_give.remove()
+
+    # Create the price graph
+    xpoints = np.array(range(0,nb_days))
+    ypoints = np.array(shared_memory_price)
+
+    plt.plot(xpoints, ypoints)
+    plt.show()
     
 
     
