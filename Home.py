@@ -33,17 +33,17 @@ class Home(Process):
             elif self.conso > 50:
                 self.conso -= random.randrange(0, 25)
             self.offer = self.prod - self.conso
-            #print(f'offer : {self.offer}, temperature : {self.temperature[i]}')
+            print(f'{self.name} has offer of {self.offer} - trade policy : {self.trade_policy}')
 
 
             if self.offer > 0:
                 o = str(abs(self.offer)).encode()
                 self.mq_offer.send(o, type=self.id)
-                print(f'offer : {self.offer}, {self.id}, {self.temperature[i]}')
+                #print(f'offer : {self.offer}, {self.id}, {self.temperature[i]}')
             else:
                 d = str(-self.offer).encode()
                 self.mq_demande.send(d, type=self.id)
-                print(f'Demande : {-self.offer}, {self.id}')
+                #print(f'Demande : {-self.offer}, {self.id}')
                 
             self.barrier_init.wait()
 
@@ -87,17 +87,17 @@ class Home(Process):
                     m, t = self.mq_offer.receive(type=self.id)
                     data =f'{self.offer} '
                     self.s.sendall(data.encode())
-                    print("offer:", data)
+                    print(f'Send offer: {data} to Market')
                 
             elif self.offer < 0:
-                data =f'{-self.offer} '
+                data =f'{self.offer} '
                 self.s.sendall(data.encode())
-                print("Sell:", data)
+                print(f'Send demand: {data} to Market')
 
             else :
                 data =f'{-self.offer} '
                 self.s.sendall(data.encode())
-                print("Nothing:", data)
+                #print("Nothing:", data)
 
             self.lock.acquire()
             while self.mq_demande.current_messages:
@@ -106,4 +106,4 @@ class Home(Process):
 
             self.s.close()
             self.barrier_day.wait()
-            print(f'end of day {i} {self.name}')
+            #print(f'end of day {i} {self.name}')

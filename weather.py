@@ -20,7 +20,7 @@ class WeatherSimulator(Process):
                 self.temperature = 40
             # update shared memory with current temperature
             self.shared_memory[i] = self.temperature
-            print(self.shared_memory[i])
+            print(f'temperature today : {self.shared_memory[i]}')
 
             self.day.wait()
             print(f'day {i} off_________________________________________')

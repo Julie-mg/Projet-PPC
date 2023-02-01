@@ -7,7 +7,7 @@ import time
 
 if __name__ == "__main__":
     num_homes = 10
-    nb_days = 10
+    nb_days = 8
     barrier_init = Barrier(num_homes)
     barrier_boucle = Barrier(num_homes)
     barrier_day = Barrier(num_homes+2)
@@ -16,16 +16,17 @@ if __name__ == "__main__":
     key_give = 770
     mq_ask = sysv_ipc.MessageQueue(key_ask, sysv_ipc.IPC_CREAT)
     mq_give = sysv_ipc.MessageQueue(key_give, sysv_ipc.IPC_CREAT)
-    price = 10
-    coeff = [1.1, 0.9]
+    price = 0.17
+    coeff = [0.1, 0.1]
+
+    HOST = 'localhost'
+    PORT = 17891
 
     shared_memory = Array('i', nb_days)
     
     weather = WeatherSimulator(shared_memory, nb_days, barrier_day)
     weather.start()
 
-    HOST = 'localhost'
-    PORT = 17890
 
     market = Market(price, coeff, nb_days, num_homes, barrier_day, HOST, PORT)
 
@@ -44,8 +45,6 @@ if __name__ == "__main__":
 
     for home in home_processes:
         home.join()
-
-    
 
     mq_ask.remove()
     mq_give.remove()
