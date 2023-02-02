@@ -26,8 +26,7 @@ class Home(Process):
 
         for i in range (self.nb_days):
             # behavior of the process
-            #print(f'{self.name} has offer of {self.offer}. Its trade policy is {self.trade_policy}')
-            self.prod = random.randrange(40,80)
+            self.prod = random.randrange(20,80)
             self.conso = random.randrange(6,60)
             if (self.temperature[i] < 10 or self.temperature[i] > 38):
                 self.conso += random.randrange(0,25)
@@ -40,21 +39,17 @@ class Home(Process):
             if self.offer > 0:
                 o = str(abs(self.offer)).encode()
                 self.mq_offer.send(o, type=self.id)
-                #print(f'offer : {self.offer}, {self.id}, {self.temperature[i]}')
             else:
                 d = str(-self.offer).encode()
                 self.mq_demande.send(d, type=self.id)
-                #print(f'Demande : {-self.offer}, {self.id}')
                 
             self.barrier_init.wait()
 
-            if (self.trade_policy == 1 or self.trade_policy == 3):           #si doit donner production aux autres homes
+            if (self.trade_policy == 1 or self.trade_policy == 3):           #si doit donner sa production aux autres homes
                 self.lock.acquire()
                 while (self.mq_demande.current_messages and self.offer > 0):
-                    #print(f'{self.name} has offer of {self.offer} - trade policy : {self.trade_policy}')
 
                     m, t = self.mq_offer.receive(type=self.id)               #récupère son message d'offer d'énergie dans la liste d'offer
-                    #print("a trouve son propre message")
 
                     (e, t) = self.mq_demande.receive()                             #récupère une demande en énergie
                     num_home = t
@@ -66,12 +61,11 @@ class Home(Process):
                         l = str(left_ask).encode()
                         self.mq_demande.send(l, num_home)
                         self.offer = 0
-                        #print("manque de l'énergie")
+
                     elif left_ask < 0:                                           #si il reste de l'énergie à donner
                         l = str(-left_ask).encode()
                         self.mq_offer.send(l, type=self.id)
                         self.offer = -left_ask
-                        #print("encore de l'énergie à donner")
                     else :
                         self.offer = 0
                 self.lock.release()
@@ -88,17 +82,16 @@ class Home(Process):
                     m, t = self.mq_offer.receive(type=self.id)
                     data =f'{self.offer} '
                     self.s.sendall(data.encode())
-                    print(f'Send offer: {data} to Market')
+                    print(f'{self.name} send offer: {data} to Market')
                 
             elif self.offer < 0:
                 data =f'{self.offer} '
                 self.s.sendall(data.encode())
-                print(f'Send demand: {data} to Market')
+                print(f'{self.name} send demand: {data} to Market')
 
             else :
                 data =f'{-self.offer} '
                 self.s.sendall(data.encode())
-                #print("Nothing:", data)
 
             self.lock.acquire()
             while self.mq_demande.current_messages:
@@ -107,4 +100,3 @@ class Home(Process):
 
             self.s.close()
             self.barrier_day.wait()
-            #print(f'end of day {i} {self.name}')

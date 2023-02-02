@@ -4,10 +4,14 @@ from Home import Home
 from Market import Market
 from Weather import WeatherSimulator
 import time
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import numpy as np
 
 if __name__ == "__main__":
-    num_homes = 10
-    nb_days = 15
+    num_homes = 5
+    nb_days = 5
     price = 0.17
     coeff = [0.1, 0.1]
 
@@ -22,16 +26,19 @@ if __name__ == "__main__":
     mq_give = sysv_ipc.MessageQueue(key_give, sysv_ipc.IPC_CREAT)
 
     HOST = 'localhost'
-    PORT = 17893
+    PORT = 17890
 
     shared_memory = Array('i', nb_days)
-    #shared_memory_price = Array('f', nb_days)
+    shared_memory_price = Array('f', nb_days)
     
     weather = WeatherSimulator(shared_memory, nb_days, barrier_day)
     weather.start()
 
-    market = Market(price, coeff, nb_days, num_homes, barrier_day, HOST, PORT)
+
+    market = Market(price, coeff, nb_days, num_homes, barrier_day, HOST, PORT, shared_memory_price)
+
     market.start()
+    print("Market started")
 
     # Wait for the Market to start listening for connections
     time.sleep(1)
@@ -49,12 +56,12 @@ if __name__ == "__main__":
     mq_ask.remove()
     mq_give.remove()
 
-    """# Create the price graph
+    # Create the price graph
     xpoints = np.array(range(0,nb_days))
     ypoints = np.array(shared_memory_price)
 
     plt.plot(xpoints, ypoints)
-    plt.show()"""
+    plt.show()
     
 
     

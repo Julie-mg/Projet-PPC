@@ -12,6 +12,7 @@ class WeatherSimulator(Process):
 
     def run(self):
         for i in range (self.nb_days):
+            print(f'------- Start of day {i} -------\n')
             # update temperature
             self.temperature += random.randint(-self.temp_variation, self.temp_variation)
             if self.temperature < -15:
@@ -20,10 +21,10 @@ class WeatherSimulator(Process):
                 self.temperature = 40
             # update shared memory with current temperature
             self.shared_memory[i] = self.temperature
-            print(f'temperature today : {self.shared_memory[i]}')
+            print(f'Temperature today : {self.shared_memory[i]}\n')
 
             self.day.wait()
-            print(f'day {i} off_________________________________________')
+            print(f'\n------- End of day {i} -------\n')
 
 if __name__ == "__main__":
     nb_days = 10

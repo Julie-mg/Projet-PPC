@@ -5,9 +5,13 @@ import concurrent.futures
 import time
 import signal
 from External import External
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import numpy as np
 
 class Market(Process):
-    def __init__(self, price, coeff, nb_days, nb_homes, barrier_day, HOST, PORT, shared_memory_price):
+    def __init__(self, price, coeff, nb_days, nb_homes, barrier_day, HOST, PORT):
         super().__init__()
         self.nb_days = nb_days
         self.price = price
@@ -19,7 +23,6 @@ class Market(Process):
         self.nb_conn = 0
         self.nb_homes = nb_homes
         self.barrier_day = barrier_day
-        self.shared_memory_price = shared_memory_price
         self.event = [0,0,0,0]
         self.signals = [1,2,3,4]
         self.barrier_signal = Barrier(2)
@@ -45,6 +48,8 @@ class Market(Process):
         for sig in range(len(self.signals)):
             signal.signal(self.signals[sig], self.handler)
 
+        plt.axis([0, self.nb_days, 0, 1])
+
         for i in range (self.nb_days):
             self.nb_conn = 0
             self.sell = 0
@@ -52,6 +57,7 @@ class Market(Process):
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
                 server_socket.setblocking(False)
                 server_socket.bind((self.HOST, self.PORT))
+                server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 server_socket.listen(4)
                 with concurrent.futures.ThreadPoolExecutor(max_workers = 4) as executor:
                     while True:
@@ -62,22 +68,14 @@ class Market(Process):
                             time.sleep(0.1)
                             self.nb_conn += 1
                             if self.nb_conn == self.nb_homes:
-                                #print("break")
                                 break
-                            #print("test1")
-                        #print("test2")
-                    #print("test3")
                     server_socket.close()
                 server_socket.close()
-                #print("test4")
             server_socket.close()
-            #print("start calculate price")
 
             self.external = External(self.nb_days, self.signals)
             self.external.start()
             self.external.join()
-
-            print("fin external")
 
             self.price = self.price*self.long_term_coeff
             
@@ -103,27 +101,29 @@ class Market(Process):
                 self.price = 0.1
 
             print(f'Homes ask for {self.sell} and sell {self.buy}')
-            print(f'Price for today: {self.price}')
-            self.shared_memory_price[i] = self.price
-            #print(f'---------day {i} off')
+            print(f'\nPrice for today: {self.price}')
+
             self.event = [0,0,0,0]
+
+            # Create the price graph
+            plt.scatter(i, self.price)
+            plt.pause(0.05)
+            plt.title("Real Time plot of price and day")
+            plt.xlabel("day")
+            plt.ylabel("price")
             
             time.sleep(1)
-            self.barrier_day.wait()
 
-        #print(f'end of day {i} market')
+            self.barrier_day.wait()
+        plt.show()
 
     def socket_handler(self, s, a):
         with s:
-            #print("Connected to client: ", a)
             data = ''
             while data == '':
                 data = s.recv(1024)
                 m = int(data.decode())
-                print(f"Market received: {m}")
                 if m > 0:
                     self.buy += m
                 elif m < 0:
                     self.sell += m
-            #print("Disconnecting from client: ", a)
-            #print("nb_conn : ", self.nb_conn)

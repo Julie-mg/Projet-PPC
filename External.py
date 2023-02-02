@@ -11,6 +11,7 @@ class External(Process):
         self.proba = [0.95, 0.75, 0.6, 0.5]
     
     def run(self):
+        print("\n-- Calul of the new energy price --")
         for event in self.event_types:
             for i in range(len(self.event_types)):
                 if event == self.event_types[i]:
