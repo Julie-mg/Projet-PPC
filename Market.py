@@ -11,15 +11,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class Market(Process):
-    def __init__(self, price, coeff, nb_days, nb_homes, barrier_day, HOST, PORT):
+    def __init__(self, price, coeff, nb_days, nb_homes, barrier_day, long_term_coeff, HOST, PORT):
         super().__init__()
         self.nb_days = nb_days
         self.price = price
         self.coeff = coeff
-        self.long_term_coeff = 0.92
+        self.long_term_coeff = long_term_coeff
         self.HOST = HOST
         self.PORT = PORT
-        self.nb_conn = 0
         self.nb_homes = nb_homes
         self.barrier_day = barrier_day
         self.event = [0,0,0,0]

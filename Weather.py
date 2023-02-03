@@ -2,15 +2,15 @@ import random
 from multiprocessing import Process, Array
 
 class WeatherSimulator(Process):
-    def __init__(self, shared_memory, nb_days, day):
+    def __init__(self, shared_memory, nb_days, temp_variation, day):
         super().__init__()
         self.shared_memory = shared_memory
-        self.temperature = random.randrange(0,30) # starting temperature
-        self.temp_variation = 6 # temperature variation per update
+        self.temp_variation = temp_variation # temperature variation per update
         self.nb_days = nb_days
         self.day = day
 
     def run(self):
+        self.temperature = random.randrange(0,30)
         for i in range (self.nb_days):
             print(f'------- Start of day {i} -------\n')
             # update temperature
