@@ -1,23 +1,23 @@
 # Projet-PPC
 
-This program is a multi-process and multithread simulation of an energy market where energy-producing and consuming homes, weather conditions and random events contribute to the evolution of energy price over time.
+The goal of this programming project is to design and implement a multi-process and multithread simulation in Python with multiple ways of communication between them. The program simulates an energy market where energy-producing and consuming homes, weather conditions, and random events contribute to the evolution of energy price over time.
 
 ## Requirements
-To run the application, you will need to have the following libraries installed:
+To run the application, you will need to have Python3 and the following libraries installed:
 
-*matplotlib
-*sysv-ipc
+* matplotlib
+* sysv-ipc
 
 ## Installation
-Download all the files in the same repository.
+Download all the files of this project in the same repository.
 Install matplotlib and sysv-ipc libraries using the following commands in the terminal:
 
-*python3 -m pip install matplotlib --user
-*pip install sysv-ipc
+* `python3 -m pip install matplotlib --user`
+* `pip install sysv-ipc`
 
 Open a terminal in the directory of the files and type the following command to start the simulation:
 
-*python3 Main.py
+`python3 Main.py`
 
 ## Classes
 Homes: Each home process has a unique ID and randomly takes a trade policy (0: Always sell, 1: Always give, 2: Sell if no takers). At the time of their creation and each day, the homes are assigned two random ints that define their production and consumption of energy, which vary according to the temperature of the day. The offer represents the difference between these two values. If it's negative, the home will look for a way to gain energy, and if it's positive, the home will get rid of it according to its trade policy.
@@ -35,5 +35,5 @@ Homes communicate with each other using message queues and exchange their energy
 Weather updates a shared memory with the temperature, and the Homes read it.
 External process, a child of the Market process, sends signal events to its parent, each signal corresponding to an event.
 
-## Goal
-The goal of this programming project is to design and implement a multi-process and multithread simulation in Python with multiple ways of communication between them. The program simulates an energy market where energy-producing and consuming homes, weather conditions, and random events contribute to the evolution of energy price over time.
+## Functionality
+The user can try to modify the variables in the Main.py to show how each number can influence the price of the energy over time (number of houses, number of days of the simulation, initial price of the energy...)
