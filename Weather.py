@@ -25,15 +25,3 @@ class WeatherSimulator(Process):
 
             self.day.wait()
             print(f'\n------- End of day {i} -------\n')
-
-if __name__ == "__main__":
-    nb_days = 10
-    shared_memory = Array('i', nb_days)
-
-    weather = WeatherSimulator(shared_memory, nb_days)
-
-    weather.start()
-    weather.join()
-
-    for i in range (nb_days):
-        print(f"Temperature in shared memory: {shared_memory[i]}")
