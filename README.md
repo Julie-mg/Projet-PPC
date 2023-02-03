@@ -35,5 +35,7 @@ Homes communicate with each other using message queues and exchange their energy
 Weather updates a shared memory with the temperature, and the Homes read it.
 External process, a child of the Market process, sends signal events to its parent, each signal corresponding to an event.
 
+Take a look at our report `Projet PPC.pdf` for more informations about our work and reflexions about this project.
+
 ## Functionality
 The user can try to modify the variables in the Main.py to show how each number can influence the price of the energy over time (number of houses, number of days of the simulation, initial price of the energy...)
