@@ -24,7 +24,7 @@ if __name__ == "__main__":
     mq_give = sysv_ipc.MessageQueue(key_give, sysv_ipc.IPC_CREAT)
 
     HOST = 'localhost'
-    PORT = 17893
+    PORT = 17892
 
     shared_memory = Array('i', nb_days)
     #shared_memory_price = Array('f', nb_days)

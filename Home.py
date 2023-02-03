@@ -9,7 +9,6 @@ class Home(Process):
         self.id = id
         self.mq_offer = mq_offer
         self.mq_demande = mq_demande
-        self.offer = self.prod - self.conso
         self.barrier_init = barrier_init
         self.barrier_while = barrier_while
         self.lock = lock
@@ -20,8 +19,8 @@ class Home(Process):
         self.PORT = PORT
         
     def run(self):
-        self.trade_policy = random.randint(1,3)
         for i in range (self.nb_days):
+            self.trade_policy = random.randint(1,3)
             # behavior of the process
             self.prod = random.randrange(20,80)
             self.conso = random.randrange(6,60)
