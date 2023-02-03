@@ -20,15 +20,15 @@ Open a terminal in the directory of the files and type the following command to 
 `python3 Main.py`
 
 ## Classes
-* Home: Each home process has a unique ID and randomly takes a trade policy (0: Always sell, 1: Always give, 2: Sell if no takers). At the time of their creation and each day, the homes are assigned two random ints that define their production and consumption of energy, which vary according to the temperature of the day. The offer represents the difference between these two values. If it's negative, the home will look for a way to gain energy, and if it's positive, the home will get rid of it according to its trade policy.
+_Home_: Each home process has a unique ID and randomly takes a trade policy (0: Always sell, 1: Always give, 2: Sell if no takers). At the time of their creation and each day, the homes are assigned two random ints that define their production and consumption of energy, which vary according to the temperature of the day. The offer represents the difference between these two values. If it's negative, the home will look for a way to gain energy, and if it's positive, the home will get rid of it according to its trade policy.
 
-* Weather: This process is the first to start each day, it fills a shared memory with today's temperature.
+_Weather_: This process is the first to start each day, it fills a shared memory with today's temperature.
 
-* External: This process is started by the Market. It sends signals to its parent (the Market) if an event occurs.
+_External_: This process is started by the Market. It sends signals to its parent (the Market) if an event occurs.
 
-* Market: The energy price varies according to events, and energy asks and sells from the Home classes. The energy price starts at 17 cents/kWatt. This process starts threads that take care of transactions from the Homes to the Market.
+_Market_: The energy price varies according to events, and energy asks and sells from the Home classes. The energy price starts at 17 cents/kWatt. This process starts threads that take care of transactions from the Homes to the Market.
 
-* Main: This process starts the other processes. In this class, you can change all the values of the variables and constants used in the program.
+_Main_: This process starts the other processes. In this class, you can change all the values of the variables and constants used in the program.
 
 ## Communication
 Homes communicate with each other using message queues and exchange their energy freely before selling it to or buying it from the Market using sockets.
