@@ -17,7 +17,6 @@ class Market(Process):
         self.price = price
         self.coeff = coeff
         self.long_term_coeff = 0.92
-        self.price = 0.145
         self.HOST = HOST
         self.PORT = PORT
         self.nb_conn = 0
@@ -69,9 +68,7 @@ class Market(Process):
                             self.nb_conn += 1
                             if self.nb_conn == self.nb_homes:
                                 break
-                    server_socket.close()
-                server_socket.close()
-            server_socket.close()
+            time.sleep(2)
 
             self.external = External(self.nb_days, self.signals)
             self.external.start()
@@ -80,8 +77,8 @@ class Market(Process):
             self.price = self.price*self.long_term_coeff
             
             if self.sell != 0:
-                self.price += 0.1*abs(self.sell/100)
-            elif self.buy != 0:
+                self.price += 0.05*abs(self.sell/100)
+            if self.buy != 0:
                 self.price -= 0.1*abs(self.buy/100)
 
             # Impact of the events
